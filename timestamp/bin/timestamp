@@ -1,0 +1,24 @@
+#!/usr/bin/env tclsh
+#
+# timestamp: print current date-timestamp
+# author: djl
+# flags:
+#  -d    date only.
+#  -r    rfc3339 except it's missing the colon in offset /shrug.
+#  -v    verbose human readable.
+#        human readable.
+proc die {{msg "USAGE: $argv0 \[-d|r|v\]"}} {
+	puts stderr $msg
+	exit 1
+}
+
+switch [lindex $argv 0] {
+	-d { set fmt "%Y-%m-%d" }
+	-r { set fmt "%Y-%m-%dT%T%z" }
+	-v { set fmt "%Y-%m-%d %T %Z" }
+	{} { set fmt "%Y-%m-%d %H:%M" }
+	default die
+}
+
+puts [clock format [clock seconds] -format $fmt];
+

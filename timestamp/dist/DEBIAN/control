@@ -1,0 +1,11 @@
+Package: timestamp
+Version: 1.0
+Section: custom
+Priority: optional
+Architecture: all
+Essential: no
+Depends: tclsh
+Installed-Size: 1024
+Maintainer: Dylan Lom <djl@dylanlom.com>
+Description: Output the current date/time stamp in various formats.
+
