@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+#
+# sign: generate a signature
+# author: Dylan Lom <djl@dylanlom.com>
+# licence: cc0
+
+printf -- "--\n"
+printf -- "$ %s@%s $ %s $\n" \
+	"$(whoami)" "$(hostname)" \
+	"$(date +"%Y-%m-%d %H:%M %Z")"
