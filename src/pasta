@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+#
+# pasta: simple ssh-based paste bin
+# author: Hiltjo Posthuma <hiltjo@codemass.org>, Dylan Lom <djl@dylanlom.com>
+# see-also: https://codemadness.org/paste-service.html
+
+argv0="$0"
+
+usage() {
+	echo "usage: $argv0 [-p] filename"
+	exit 1
+}
+
+pasta() {
+	ssh djl@p.dlom.cc "cat > /usr/local/www/p.dlom.cc/$1"
+	echo "http://p.dlom.cc/$1"
+}
+
+[ "$#" -lt 1 ] && usage
+
+png="$([ "$1" = '-p' ] && echo 'true')"
+[ ! -z "$png" ] && shift
+
+title="$1"
+[ -z "$title" ] && usage
+
+([ ! -z "$png" ] && import png:- || cat) | pasta "$title"
+

@@ -1,9 +1,12 @@
 all: djl-utils.deb
 
-dist: sign suptime timestamp
+dist: sign pasta suptime timestamp
 
 sign: src/sign
 	cp src/sign dist/usr/bin
+
+pasta: src/pasta
+	cp src/pasta dist/usr/bin
 
 suptime: src/suptime.c
 	cc -o dist/usr/bin/suptime src/suptime.c
