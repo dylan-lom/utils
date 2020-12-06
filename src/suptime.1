@@ -1,0 +1,51 @@
+.TH SUPTIME 1
+
+.SH NAME
+suptime \- Tell how long the system has been running.
+.SH SYNOPSIS
+.B suptime
+[\fB\-s\fR]
+[\fB\-m\fR]
+[\fB\-H\fR]
+[\fB\-d\fR]
+[\fB\-h\fR]
+.SH DESCRIPTION
+.B suptime
+outputs a single unit representation of system uptime.
+By default outputs in seconds.
+If multiple arguments are given, the last unit will be used.
+.SH OPTIONS
+.TP
+.BR \-s
+Output in seconds.
+.TP
+.BR \-m
+Output in minutes.
+.TP
+.BR \-H
+Output in hours.
+.TP
+.BR \-d
+Output in days.
+.TP
+.BR \-h
+Display help.
+.SH EXAMPLES
+To output system uptime in seconds
+.PP
+.nf
+.RS
+suptime
+.RE
+.fi
+.PP
+You can also include use the \fB\-s\fR option although it is not necessary to
+output seconds.
+.PP
+To output system uptime in days
+.PP
+.nf
+.RS
+suptime -d
+.RE
+.fi

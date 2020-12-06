@@ -1,35 +1,45 @@
+SRCDIR  = src
+DISTDIR = dist
+DISTBIN = $(DISTDIR)/usr/bin
+DISTMAN = $(DISTDIR)/usr/share/man
+
 all: djl-utils.deb
 
 dist: bin DEBIAN.control
 bin: line sign pasta suptime countdown stopwatch timestamp
 
 distdir:
-	mkdir -p dist/usr/bin
+	mkdir -p $(DISTBIN)
+	mkdir -p $(DISTMAN)/man1
 
-line: src/line.c distdir
-	cc -o dist/usr/bin/line src/line.c
+line: $(SRCDIR)/line.c distdir
+	cc -o $(DISTBIN)/line $(SRCDIR)/line.c
 
-sign: src/sign distdir
-	cp src/sign dist/usr/bin
+sign: $(SRCDIR)/sign distdir
+	cp $(SRCDIR)/sign $(DISTBIN)/sign
 
-pasta: src/pasta distdir
-	cp src/pasta dist/usr/bin
+pasta: $(SRCDIR)/pasta distdir
+	cp $(SRCDIR)/pasta $(DISTBIN)/pasta
 
-suptime: src/suptime.c distdir
-	cc -o dist/usr/bin/suptime src/suptime.c
+suptime: $(SRCDIR)/suptime.c $(SRCDIR)/suptime.1 distdir
+	cc -o $(DISTBIN)/suptime $(SRCDIR)/suptime.c
+	cp $(SRCDIR)/suptime.1 $(DISTMAN)/man1/suptime.1
 
-countdown: src/countdown.c distdir
-	cc -o dist/usr/bin/countdown src/countdown.c
+countdown: $(SRCDIR)/countdown.c distdir
+	cc -o $(DISTBIN)/countdown $(SRCDIR)/countdown.c
 
-stopwatch: src/stopwatch.c distdir
-	cc -o dist/usr/bin/stopwatch src/stopwatch.c
+stopwatch: $(SRCDIR)/stopwatch.c $(SRCDIR)/stopwatch.1 distdir
+	cc -o $(DISTBIN)/stopwatch $(SRCDIR)/stopwatch.c
+	cp $(SRCDIR)/stopwatch.1 $(DISTMAN)/man1/stopwatch.1
 
-timestamp: src/timestamp distdir
-	cp src/timestamp dist/usr/bin
+timestamp: $(SRCDIR)/timestamp $(SRCDIR)/timestamp.1 distdir
+	cp $(SRCDIR)/timestamp $(DISTBIN)
+	cp $(SRCDIR)/timestamp.1 $(DISTMAN)/man1/timestamp.1
 
-DEBIAN.control: src/DEBIAN/control distdir
+
+DEBIAN.control: $(SRCDIR)/DEBIAN/control distdir
 	rm -rf dist/DEBIAN
-	cp -r src/DEBIAN dist/DEBIAN
+	cp -r $(SRCDIR)/DEBIAN dist/DEBIAN
 
 djl-utils.deb: dist
 	dpkg-deb -b dist

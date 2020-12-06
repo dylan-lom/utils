@@ -1,0 +1,34 @@
+.TH TIMESTAMP 1
+.SH NAME
+timestamp \- print the current datetime
+.SH SYNOPSIS
+.B timestamp
+[\fB\-d\fR]
+[\fB\-r\fR]
+[\fB\-v\fR]
+[\fB\-h\fR]
+.SH DESCRIPTION
+.B timestamp
+prints the current datetime.
+.SH OPTIONS
+.TP
+.BR \-d
+Use %Y-%m-%d format.
+.TP
+.BR \-r
+Use the RFC3339 timestamp format.
+.TP
+.BR \-v
+Use %Y-%m-%d %T %Z format.
+This is the default format if none are given.
+.TP
+.BR \-h
+Display help
+.SH EXAMPLES
+To get the current datetime in RFC3339 format
+.PP
+.nf
+.RS
+timestamp -r
+.RE
+.fi
