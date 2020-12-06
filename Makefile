@@ -12,11 +12,13 @@ distdir:
 	mkdir -p $(DISTBIN)
 	mkdir -p $(DISTMAN)/man1
 
-line: $(SRCDIR)/line.c distdir
+line: $(SRCDIR)/line.c $(SRCDIR)/line.1 distdir
 	cc -o $(DISTBIN)/line $(SRCDIR)/line.c
+	cp $(SRCDIR)/line.1 $(DISTMAN)/man1/line.1
 
-sign: $(SRCDIR)/sign distdir
+sign: $(SRCDIR)/sign $(SRCDIR)/sign.1 distdir
 	cp $(SRCDIR)/sign $(DISTBIN)/sign
+	cp $(SRCDIR)/sign.1 $(DISTMAN)/man1/sign.1
 
 pasta: $(SRCDIR)/pasta distdir
 	cp $(SRCDIR)/pasta $(DISTBIN)/pasta
@@ -25,8 +27,9 @@ suptime: $(SRCDIR)/suptime.c $(SRCDIR)/suptime.1 distdir
 	cc -o $(DISTBIN)/suptime $(SRCDIR)/suptime.c
 	cp $(SRCDIR)/suptime.1 $(DISTMAN)/man1/suptime.1
 
-countdown: $(SRCDIR)/countdown.c distdir
+countdown: $(SRCDIR)/countdown.c $(SRCDIR)/countdown.1 distdir
 	cc -o $(DISTBIN)/countdown $(SRCDIR)/countdown.c
+	cp $(SRCDIR)/countdown.1 $(DISTMAN)/man1/countdown.1
 
 stopwatch: $(SRCDIR)/stopwatch.c $(SRCDIR)/stopwatch.1 distdir
 	cc -o $(DISTBIN)/stopwatch $(SRCDIR)/stopwatch.c
