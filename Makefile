@@ -1,10 +1,13 @@
 all: djl-utils.deb
 
 dist: bin DEBIAN.control
-bin: sign pasta suptime countdown stopwatch timestamp
+bin: line sign pasta suptime countdown stopwatch timestamp
 
 distdir:
 	mkdir -p dist/usr/bin
+
+line: src/line.c distdir
+	cc -o dist/usr/bin/line src/line.c
 
 sign: src/sign distdir
 	cp src/sign dist/usr/bin
