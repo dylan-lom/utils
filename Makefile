@@ -1,3 +1,4 @@
+VERSION = v0.0.1
 SRCDIR  = src
 DISTDIR = dist
 DISTBIN = $(DISTDIR)/usr/bin
@@ -50,6 +51,9 @@ djl-utils.deb: dist
 
 install: djl-utils.deb
 	dpkg -i dist/djl-utils.deb
+
+tarball:
+	tar -czf $(VERSION).tgz LICENSE Makefile src/
 
 clean:
 	rm -rf dist
