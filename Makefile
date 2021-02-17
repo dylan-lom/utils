@@ -7,7 +7,7 @@ DISTMAN = $(DISTDIR)/usr/share/man
 all: djl-utils.deb
 
 dist: bin DEBIAN.control
-bin: line sign pasta suptime countdown stopwatch timestamp
+bin: line sign pasta suptime countdown truthy stopwatch timestamp
 
 distdir:
 	mkdir -p $(DISTBIN)
@@ -23,6 +23,9 @@ sign: $(SRCDIR)/sign $(SRCDIR)/sign.1 distdir
 
 pasta: $(SRCDIR)/pasta distdir
 	cp $(SRCDIR)/pasta $(DISTBIN)/pasta
+
+truthy: $(SRCDIR)/truthy.c distdir
+	cc -o $(DISTBIN)/truthy $(SRCDIR)/truthy.c
 
 suptime: $(SRCDIR)/suptime.c $(SRCDIR)/suptime.1 distdir
 	cc -o $(DISTBIN)/suptime $(SRCDIR)/suptime.c
