@@ -1,28 +1,38 @@
 #!/usr/bin/env sh
 #
-# pasta: simple ssh-based paste bin
+# pasta: simple ssh-based paste bin (client)
 # author: Hiltjo Posthuma <hiltjo@codemass.org>, Dylan Lom <djl@dylanlom.com>
 # see-also: https://codemadness.org/paste-service.html
+
+sshdomain="djl@p.dlom.cc"
+destpath="/usr/local/www/p.dlom.cc"
+destdomain="http://p.dlom.cc"
 
 argv0="$0"
 
 usage() {
-	echo "usage: $argv0 [-p] filename"
+	echo "usage: $argv0 [-p | -c] filename"
 	exit 1
 }
 
-pasta() {
-	ssh djl@p.dlom.cc "cat > /usr/local/www/p.dlom.cc/$1"
-	echo "http://p.dlom.cc/$1"
-}
+while [ "$#" -gt 1 ]; do
+    case "$1" in
+        '-p') png='true'; ;;
+        '-c') concat='true'; ;;
+        *) usage ;;
+    esac
+    shift
+done
 
-[ "$#" -lt 1 ] && usage
+name="$1"
+[ -z "$name" ] && usage
 
-png="$([ "$1" = '-p' ] && echo 'true')"
-[ ! -z "$png" ] && shift
+if [ -z "$concat" ]; then
+    ([ ! -z "$png" ] && import png:- || cat) | \
+        ssh "$sshdomain" "cat > $destpath/$name"
+else
+    ssh "$sshdomain" "cat >> $destpath/$name"
+fi
 
-title="$1"
-[ -z "$title" ] && usage
-
-([ ! -z "$png" ] && import png:- || cat) | pasta "$title"
+echo "$destdomain/$name"
 
