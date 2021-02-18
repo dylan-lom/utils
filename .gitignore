@@ -3,3 +3,7 @@ a.out
 dist
 *.swp
 *.tgz
+djl-utils
+
+bin
+dist

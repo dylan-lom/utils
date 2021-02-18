@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     while (time) {
         /* Clear stdout, otherwise going from e.g. 10->9 leaves a trailing 0 */
         printf("\r                    ");
-        printf("\r%d", time);
+        printf("\r%d", (int)time);
         fflush(stdout);
         sleep(1);
         time--;
