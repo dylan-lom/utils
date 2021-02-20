@@ -18,7 +18,7 @@ cbuild() {
     target="$1"
     targetdest="bin/$(prettyname "$target")"
     shift
-    (set -x; cc $CFLAGS -o "$targetdest" "$target" "$@")
+    (set -x; cc $CFLAGS -o "$targetdest" "$target" src/util.c "$@")
 }
 
 fbuild() {
@@ -31,6 +31,7 @@ bin() {
     [ ! -d bin ] && mkdir bin
 
     for f in src/*.c; do
+        [ "$f" = "src/util.c" ] && continue
         cbuild "$f"
     done
 

@@ -21,14 +21,18 @@
 
 #include "util.h"
 
-const char* argv0;
+const char *argv0;
 
-void usage() {
+void
+usage()
+{
     fprintf(stderr, "usage: %s ln\n", argv0);
     exit(EXIT_FAILURE);
 }
 
-int main(int argc, char *argv[]) {
+int
+main(int argc, char *argv[])
+{
     SET_ARGV0();
 
     if (argc < 1) usage();

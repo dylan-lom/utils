@@ -1,3 +1,13 @@
 #define SHIFT_ARGS() argv++; argc--;
 #define SET_ARGV0()  argv0 = argv[0]; SHIFT_ARGS();
 
+void     die(const char *fmt, ...);
+void     edie(const char *fmt, ...);
+
+void    *ecalloc(size_t nmemb, size_t size);
+
+size_t   str_pushc(char *s, char c, size_t size, size_t realloc_amount);
+int      str_trimr(char *s, char c, int max_num);
+char    *str_concat(int count, ...);
+#define  STR_EALLOC(s) ecalloc((s), sizeof(char))
+#define  STR_MALLOC(s) calloc((s), sizeof(char))
