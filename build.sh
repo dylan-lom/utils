@@ -7,14 +7,11 @@ VERSION='0.0.2-1'
 CFLAGS="-std=c99 -Wall -W -Wpointer-arith -Wbad-function-cast -Wpedantic -D_XOPEN_SOURCE=700"
 DEBDIR="dist/djl-utils"
 
-commands="bin clean deb help"
+commands="bin clean deb help tarball"
+argv0="$0"
 
 prettyname() {
     basename "$1" | rev | cut -d'.' -f2 | rev
-}
-
-help() {
-    echo "$0 [$(echo "$commands" | tr ' ' '|')]" > /dev/stderr
 }
 
 cbuild() {
@@ -42,6 +39,9 @@ bin() {
     done
 }
 
+clean() {
+    (set -x; rm -rf dist bin)
+}
 
 deb() {
     bin
@@ -55,8 +55,14 @@ deb() {
              dpkg-deb -b "$DEBDIR")
 }
 
-clean() {
-    (set -x; rm -rf dist bin)
+
+help() {
+    echo "$argv0 [$(echo "$commands" | tr ' ' '|')]" > /dev/stderr
+}
+
+tarball() {
+    "$argv0" clean
+    (set -x; tar -czf "v$VERSION.tgz" src doc pkgsrc "$argv0" LICENSE)
 }
 
 test -z "$1" && bin || $1
