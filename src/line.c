@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Dylan Lom <djl@dylanlom.com>
+ * Copyright (c) 2020, 2021 Dylan Lom <djl@dylanlom.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted.
@@ -26,10 +26,23 @@ const char *argv0;
 void
 usage()
 {
-    fprintf(stderr, "usage: %s ln\n", argv0);
-    exit(EXIT_FAILURE);
+    die("usage: %s ln", argv0);
 }
 
+/* Print the ln'th line from fp to stdout */
+void
+line(FILE *fp, int ln)
+{
+    char c;
+    int cln = 1;
+    while ((c = fgetc(fp)) != '\0') {
+        if (cln > ln) break;
+        if (cln == ln) putc(c, stdout);
+        if (c == '\n') cln++;
+    }
+}
+
+/* Print a specified line from stdin */
 int
 main(int argc, char *argv[])
 {
@@ -40,31 +53,13 @@ main(int argc, char *argv[])
     char *p;
     ln = (int)strtol(argv[0], &p, 10);
     if (errno != 0 || *p != '\0') {
-        fprintf(stderr, "strtol: %s\n", errno
-                ? strerror(errno)
-                : "Failed to parse ln argument."
-        );
-        exit(EXIT_FAILURE);
+        errno ? edie("strtol: ") : die("unable to parse ln");
     }
     SHIFT_ARGS();
 
-    int cln = 1;
-    while (cln <= ln) {
-        char c;
-        int r;
-        r = read(STDIN_FILENO, &c, 1);
-        if (r == -1) {
-            fprintf(stderr, "read: %s\n", strerror(errno));
-            exit(1);
-        } else if (r == 0) {
-            exit(2);
-        } else if (cln == ln) {
-            putc(c, stdout);
-        }
-
-        if (c == '\n') cln++;
-    }
-
-    return EXIT_SUCCESS;
+    FILE *fp;
+    fp = fdopen(STDIN_FILENO, "r");
+    line(fp, ln);
+    return 0;
 }
 
