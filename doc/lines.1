@@ -1,0 +1,26 @@
+.TH LINES 1
+.SH NAME
+line \- extract lines from input
+.SH SYNOPSIS
+.B line
+.IR [LINES...]
+.SH DESCRIPTION
+.B line
+extracts lines from stdin. If multiple lines are provided, they will be sorted
+numerically. If the same line is specified twice, it will only be extracted
+once.
+.SH EXAMPLES
+Get the 3rd line from the file line.1
+.PP
+.nf
+.RS
+line 3 < line.1
+.RE
+.fi
+Get the 3rd, 4th and 5th lines from the file line.1
+.PP
+.nf
+.RS
+line 3 5 4 < line.1
+.RE
+.fi
