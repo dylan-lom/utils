@@ -48,9 +48,9 @@ deb() {
     bin
     [ -d "$DEBDIR" ] && rm -f "$DISTDIR"
     (set -x; mkdir -p "$DEBDIR/usr/bin"
-             mkdir -p "$DEBDIR/usr/share/man"
+             mkdir -p "$DEBDIR/usr/share/man/man1"
              cp bin/* "$DEBDIR/usr/bin"
-             cp doc/* "$DEBDIR/usr/share/man"
+             cp doc/* "$DEBDIR/usr/share/man/man1"
              cp -r pkgsrc/DEBIAN "$DEBDIR"
              sed -i "s/%VERSION%/$VERSION/g" "$DEBDIR/DEBIAN/control"
              dpkg-deb -b "$DEBDIR")
