@@ -23,9 +23,7 @@
 
 const char *argv0;
 
-/*
- * Check if s is a valid decimal number.
- */
+/* Check if s is a valid decimal number */
 bool
 isnum(const char *s)
 {
@@ -63,6 +61,6 @@ main(int argc, char *argv[])
     SET_ARGV0();
 
     if (argc < 1 || !truthy(argv[0]))
-        return 1;
-    return 0;
+        return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }

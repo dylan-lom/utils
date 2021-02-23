@@ -27,11 +27,11 @@ done
 name="$1"
 [ -z "$name" ] && usage
 
-if [ -z "$concat" ]; then
-    ([ ! -z "$png" ] && import png:- || cat) | \
-        ssh "$sshdomain" "cat > $destpath/$name"
+if truthy "$concat"; then
+   ssh "$sshdomain" "cat >> $destpath/$name"
 else
-    ssh "$sshdomain" "cat >> $destpath/$name"
+    (truthy "$png" && import png:- || cat) | \
+        ssh "$sshdomain" "cat > $destpath/$name"
 fi
 
 echo "$destdomain/$name"
