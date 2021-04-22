@@ -35,7 +35,7 @@ bin() {
         cbuild "$f"
     done
 
-    for f in src/pasta src/sign src/timestamp; do
+    for f in src/pasta src/sign src/timestamp src/confirm; do
         fbuild "$f"
     done
 }
