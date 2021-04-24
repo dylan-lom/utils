@@ -17,11 +17,15 @@
 # THIS SOFTWARE.
 #
 
-# CHRISTMAS GIT MAGIC
+root() {
+    git rev-parse --show-toplevel
+}
+
 add() {
     truthy "$1" \
         && git add $1 \
-        #|| (for f in $(git status --porcelain | cut -c4-); do)
+        || (for f in $(git status --porcelain | cut -c4-); do \
+            confirm "Add $f?" && git add "$(root)/$f"; done)
 }
 
 alias co='checkout'
@@ -38,35 +42,22 @@ stash() {
         || git stash push
 }
 
-# Is anything already staged
+# Is anything already added (staged)
 #    then: commit that
 #    else: stage and commit everything 
 commit() {
     status
-    git status --porcelain | grep '^[^ ]*A' \
-        && git commit -a \
-        || (git add . && git commit "$1")
+    git status --porcelain | grep -q '^[^ ]*A' \
+        && git commit \
+        || (git add -p; git commit)
 }
 
 amend() {
     git commit --amend -a
 }
 
-push() {
-    git push $1
-}
-
-alias update='pull'
-pull() {
-    git pull $1
-}
-
 status() {
     git status --short
-}
-
-diff() {
-    git diff $1
 }
 
 $@
