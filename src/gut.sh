@@ -49,7 +49,7 @@ commit() {
     status
     git status --porcelain | grep -q '^[^ ]*A' \
         && git commit \
-        || (git add -p; git commit)
+        || (add; git commit)
 }
 
 amend() {
