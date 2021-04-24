@@ -1,9 +1,9 @@
-#!/usr/bin/env tclsh
+#!/usr/bin/env sh
 #
-# timestamp: print current date-timestamp
-# author: djl
+# timestamp: print current date-time(stamp)
+# author: Dylan Lom <djl@dylanlom.com>
 #
-# Copyright (C) 2020 Dylan Lom <djl@dylanlom.com>
+# Copyright (C) 2021 Dylan Lom <djl@dylanlom.com>
 #
 # Permission to use, copy, modify, and/or distribute this software for any purpose
 # with or without fee is hereby granted.
@@ -18,21 +18,26 @@
 #
 # flags:
 #  -d    date only.
-#  -r    rfc3339 except it's missing the colon in offset /shrug.
+#  -r    rfc3339 without a colon in offset.
+#  -R    rfc3339
 #  -v    verbose human readable.
-#        human readable.
-proc die {{msg "USAGE: $argv0 \[-d|r|v\]"}} {
-	puts stderr $msg
-	exit 1
+#  -h    display help
+#  *     human readable.
+
+argv0="$0"
+
+usage() {
+    echo "USAGE: $argv0 [-d|-r|-R|-v|-h]" > /dev/stderr
+    exit 1
 }
 
-switch [lindex $argv 0] {
-	-d { set fmt "%Y-%m-%d" }
-	-r { set fmt "%Y-%m-%dT%T%z" }
-	-v { set fmt "%Y-%m-%d %T %Z" }
-	{} { set fmt "%Y-%m-%d %H:%M" }
-	default die
-}
+case "$1" in
+    '-h') usage ;;
+    '-d') fmt='%Y-%m-%d';;
+    '-r') fmt='%Y-%m-%dT%T%z' ;;
+    '-R') fmt='%Y-%m-%dT%T%:z' ;;
+    '-v') fmt='%Y-%m-%d %T %Z';;
+    *)    fmt='%Y-%m-%d %H:%M';;
+esac
 
-puts [clock format [clock seconds] -format $fmt];
-
+date "+$fmt"

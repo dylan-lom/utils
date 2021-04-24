@@ -21,9 +21,9 @@ cbuild() {
     (set -x; cc $CFLAGS -o "$targetdest" "$target" src/util.c "$@")
 }
 
-fbuild() {
+shbuild() {
     target="$1"
-    targetdest="bin/$(prettyname "$target")"
+    targetdest="bin/$(prettyname "$target" | sed 's/\.sh$//')"
     (set -x; cp "$target" "$targetdest")
 }
 
@@ -35,8 +35,8 @@ bin() {
         cbuild "$f"
     done
 
-    for f in src/pasta src/sign src/timestamp src/confirm; do
-        fbuild "$f"
+    for f in src/*.sh; do
+        shbuild "$f"
     done
 }
 
