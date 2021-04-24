@@ -42,18 +42,22 @@ stash() {
         || git stash push
 }
 
-# Is anything already added (staged)
-#    then: commit that
-#    else: stage and commit everything 
+# If anything already added (staged):
+#    then commit that
+#    else prompt user to stage then commit
 commit() {
-    status
     git status --porcelain | grep -q '^[^ ]*A' \
         && git commit \
-        || (add; git commit)
+        || (status; add; git commit)
 }
 
+# If anything already added (staged):
+#    then amend that
+#    else amend all
 amend() {
-    git commit --amend -a
+    git status --porcelain | grep -q '^[^ ]*A' \
+        && git commit --amend \
+        || git commit --amend -a
 }
 
 status() {
