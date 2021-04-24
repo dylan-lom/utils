@@ -21,6 +21,10 @@ root() {
     git rev-parse --show-toplevel
 }
 
+whoami() {
+    echo "$(git config user.name) ($(git config user.email))"
+}
+
 add() {
     truthy "$1" \
         && git add $1 \
