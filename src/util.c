@@ -13,6 +13,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -49,6 +50,14 @@ ecalloc(size_t nmemb, size_t size)
     void *ptr = calloc(nmemb, size);
     if (ptr == NULL) edie("calloc: ");
     return ptr;
+}
+
+char *
+str_dupe(const char *s, size_t n)
+{
+    char *r = STR_EALLOC(n);
+    strncpy(r, s, n);
+    return r;
 }
 
 size_t
@@ -104,4 +113,13 @@ str_concat(int count, ...)
     va_end(ap);
 
     return new_str;
+}
+
+char *
+str_toupper(char *s, size_t n)
+{
+    for (size_t i = 0; i < n; i++) {
+        if islower(s[i]) s[i] = toupper(s[i]);
+    }
+    return s;
 }
