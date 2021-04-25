@@ -17,42 +17,11 @@
 # THIS SOFTWARE.
 #
 
-root() {
-    git rev-parse --show-toplevel
-}
-
-whoami() {
-    echo "$(git config user.name) ($(git config user.email))"
-}
-
 add() {
     truthy "$1" \
         && git add $1 \
         || (for f in $(git status --porcelain | cut -c4-); do \
             confirm "Add $f?" && git add "$(root)/$f"; done)
-}
-
-alias co='checkout'
-checkout() {
-    truthy "$1" && target="$1" || target="$(git config init.defaultBranch)"
-    git checkout "$target"
-}
-
-
-alias save='stash'
-stash() {
-    truthy "$1" \
-        && git stash push -m "$1" \
-        || git stash push
-}
-
-# If anything already added (staged):
-#    then commit that
-#    else prompt user to stage then commit
-commit() {
-    git status --porcelain | grep -q '^[^ ]*A' \
-        && git commit \
-        || (status; add; git commit)
 }
 
 # If anything already added (staged):
@@ -64,8 +33,39 @@ amend() {
         || git commit --amend -a
 }
 
+alias co='checkout'
+checkout() {
+    truthy "$1" && target="$1" || target="$(git config init.defaultBranch)"
+    git checkout "$target"
+}
+
+
+# If anything already added (staged):
+#    then commit that
+#    else prompt user to stage then commit
+commit() {
+    git status --porcelain | grep -q '^[^ ]*A' \
+        && git commit \
+        || (status; add; git commit)
+}
+
+root() {
+    git rev-parse --show-toplevel
+}
+
+alias save='stash'
+stash() {
+    truthy "$1" \
+        && git stash push -m "$1" \
+        || git stash push
+}
+
 status() {
     git status --short
+}
+
+whoami() {
+    echo "$(git config user.name) ($(git config user.email))"
 }
 
 $@
