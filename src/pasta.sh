@@ -4,16 +4,38 @@
 # author: Hiltjo Posthuma <hiltjo@codemass.org>, Dylan Lom <djl@dylanlom.com>
 # see-also: https://codemadness.org/paste-service.html
 
-sshdomain="djl@p.dlom.cc"
-destpath="/usr/local/www/p.dlom.cc"
-destdomain="http://p.dlom.cc"
-
+configpath="$HOME/.config/pastarc"
 argv0="$0"
 
+setup() {
+    printf "SSH Domain: "; read sshdomain
+    printf "Remote destination: "; read destpath
+    printf "Remote URL: "; read destdomain
+    printf "sshdomain='$sshdomain'\ndestpath='$destpath'\ndestdomain='$destdomain'\n" > "$configpath"
+}
+
+firsttimesetup() {
+    echo "Configuration file ($configpath) not found!"
+    confirm "Create?" || exit
+    test -d ~/.config || mkdir -p ~/.config
+    setup
+}
+
+isinstalled() {
+    echo "$PATH"
+    command -v "$1" > /dev/null \
+        && return 0 \
+        || (echo "ERROR: Executable '$1' not found!"; return 1)
+}
+
 usage() {
-	echo "usage: $argv0 [-p|-c|-g] [-x] filename"
+	echo "usage: $argv0 [-p|-c|-g] [-x] filename" > /dev/stderr
 	exit 1
 }
+
+test -f "$configpath" \
+    && . "$configpath" \
+    || firsttimesetup
 
 while [ "$#" -gt 1 ]; do
     case "$1" in
@@ -30,11 +52,11 @@ name="$1"
 [ -z "$name" ] && usage
 
 if truthy "$xclip"; then
-    command -v xclip > /dev/null \
-        || (echo "ERROR: xclip not found" && exit 1) \
-        && (echo "$destdomain/$name" | \
-            tr -d '\n' | \
-            xclip -selection clipboard)
+    isinstalled xclip || exit 1
+
+   echo "$destdomain/$name" | \
+       tr -d '\n' | \
+       xclip -selection clipboard
 fi
 
 if truthy "$get"; then
@@ -45,6 +67,7 @@ fi
 if truthy "$concat"; then
    ssh "$sshdomain" "cat >> $destpath/$name"
 else
+    isinstalled import || exit 1
     (truthy "$png" && import png:- || cat) | \
         ssh "$sshdomain" "cat > $destpath/$name"
 fi
