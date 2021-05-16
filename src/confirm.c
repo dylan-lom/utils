@@ -71,6 +71,7 @@ main(int argc, const char *argv[])
     // Options provided as args
     if (argc > 1) return confirm(argv[0], argv+1, argc-1);
 
+    // Options not provided -- use defaults
     const char **opts = STR_EALLOC(2);
     opts[0] = "y";
     opts[1] = "n";

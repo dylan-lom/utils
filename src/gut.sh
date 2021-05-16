@@ -64,6 +64,28 @@ status() {
     git status --short
 }
 
+todo() {
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            "-d") detail=true ;;
+            "-c") colorize=true ;;
+            "-f") fixme=true ;;
+            *) break ;;
+        esac
+        shift
+    done
+
+    re="(TODO$(truthy $fixme && echo '|FIXME')):"
+    color="--color=$(truthy $colorize && echo 'always' || echo 'never')"
+    if truthy $detail; then
+        # TODO: Setting color=always breaks alignment for some reason
+        git grep -nE "$color" $@ "$re" | \
+            sed 's/\([^:]*:[^:]*\):[ \t]*\(.*\)/\1\t\2/'
+    else
+        git grep -ncE $@ '(TODO|FIXME):'
+    fi
+}
+
 whoami() {
     echo "$(git config user.name) ($(git config user.email))"
 }
