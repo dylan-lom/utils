@@ -25,7 +25,7 @@ const char *argv0;
 void
 usage()
 {
-	die("usage: %s [-d|-r|-R|-v]", argv0);
+    die("usage: %s [-d|-r|-R|-v]", argv0);
 }
 
 // TODO: strftime doesn't take %:z format (-R)
