@@ -19,7 +19,6 @@ project (eg. compilation/build process currently produces a .deb file)
 * **countdown**: Start a countdown timer
 * **gut**: Wrap/simplify common `git` actions
 * **line**: Extract line(s) from stdin
-* **pasta**: Simple ssh-based pastebin
 * **sign**: Generate signature for current user
 * **stopwatch**: Start a stopwatch timer
 * **suptime**: System uptime in terms of seconds, minutes, hours or days
