@@ -17,7 +17,6 @@ project (eg. compilation/build process currently produces a .deb file)
 
 * **confirm**: Prompt user for confirmation and report response via exit code
 * **countdown**: Start a countdown timer
-* **gut**: Wrap/simplify common `git` actions
 * **line**: Extract line(s) from stdin
 * **sign**: Generate signature for current user
 * **stopwatch**: Start a stopwatch timer
