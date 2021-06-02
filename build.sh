@@ -21,22 +21,12 @@ cbuild() {
     (set -x; cc $CFLAGS -o "$targetdest" "$target" "$@")
 }
 
-shbuild() {
-    target="$1"
-    targetdest="bin/$(prettyname "$target" | sed 's/\.sh$//')"
-    (set -x; cp "$target" "$targetdest")
-}
-
 bin() {
     [ ! -d bin ] && mkdir bin
 
     for f in src/*.c; do
         [ "$f" = "src/util.c" ] && continue
         cbuild "$f"
-    done
-
-    for f in src/*.sh; do
-        shbuild "$f"
     done
 }
 
