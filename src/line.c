@@ -19,14 +19,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "util.h"
-
 const char *argv0;
 
 void
 usage()
 {
-    die("usage: %s [LINE...]", argv0);
+    fprintf(stderr, "usage: %s [LINE...]", argv0);
+    exit(1);
 }
 
 int
@@ -36,11 +35,13 @@ getlineno(const char *s)
     char *p;
     ln = (int)strtol(s, &p, 10);
     if (errno != 0 || *p != '\0' || ln <= 0) {
-        errno ? edie("strtol: ") : die("unable to parse line");
+        perror(errno ? NULL : "unable to parse line");
+        exit(1);
     }
     return ln;
 }
 
+// TODO: Refactor insertln
 /* Insert ln into lns, assuming it is lns_size long and 0 initialised */
 int *
 insertln(int ln, int *lns, size_t lns_size)
@@ -49,14 +50,16 @@ insertln(int ln, int *lns, size_t lns_size)
     int j;
 
     while (lns_size && *ip && *ip < ln) {
-        ADVANCE_PTR(ip, lns_size);
+        ip++;
+        lns_size--;
     }
 
     while (lns_size) {
         j = *ip;
         *ip = ln;
         ln = j;
-        ADVANCE_PTR(ip, lns_size);
+        ip++;
+        lns_size--;
     }
 
     return lns;
@@ -68,7 +71,7 @@ printlines(FILE *fp, int *lns, size_t lns_size)
     char c;
     int cln = 1;
     while (lns_size && (c = fgetc(fp)) != '\0') {
-        if (cln > *lns) { ADVANCE_PTR(lns, lns_size); }
+        if (cln > *lns) { lns++; lns_size--; }
         if (cln == *lns) putc(c, stdout);
         if (c == '\n') cln++;
     }
@@ -78,16 +81,22 @@ printlines(FILE *fp, int *lns, size_t lns_size)
 int
 main(int argc, char *argv[])
 {
-    int *lns;
-    SET_ARGV0();
+    argv0 = argv[0];
+    argv++;
+    argc--;
 
     if (argc < 1) usage();
     size_t lns_size = argc;
-    lns = ecalloc(lns_size, sizeof(int));
+    int *lns = calloc(lns_size, sizeof(*lns));
+    if (!lns) {
+        fprintf(stderr, "unable to allocate memory\n");
+        exit(1);
+    }
 
     while (argc) {
         lns = insertln(getlineno(argv[0]), lns, lns_size);
-        SHIFT_ARGS();
+        argv++;
+        argc--;
     }
 
     FILE *fp;
