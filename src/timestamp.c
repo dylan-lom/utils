@@ -18,14 +18,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "util.h"
-
 const char *argv0;
 
 void
 usage()
 {
-    die("usage: %s [-d|-r|-R|-v]", argv0);
+    fprintf(stderr, "usage: %s [-d|-r|-R|-v]", argv0);
+    exit(1);
 }
 
 // TODO: strftime doesn't take %:z format (-R)
@@ -50,7 +49,11 @@ main(int argc, char *argv[])
     time_t now = time(0);
     struct tm *now_tm = localtime(&now);
 
-    char *s = STR_EALLOC(100);
+    char *s = calloc(100, sizeof(*s));
+    if (!s) {
+        fprintf(stderr, "ERROR: unable to allocate memory\n");
+        exit(1);
+    }
     strftime(s, 100, fmt, now_tm);
 
     printf("%s\n", s);
