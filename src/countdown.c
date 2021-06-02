@@ -19,8 +19,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "util.h"
-
 const char* argv0;
 
 void usage() {
@@ -29,7 +27,9 @@ void usage() {
 }
 
 int main(int argc, char* argv[]) {
-    SET_ARGV0();
+    argv0 = argv[0];
+    argc--;
+    argv++;
 
     if (argc < 1) usage();
     long time;
@@ -42,7 +42,8 @@ int main(int argc, char* argv[]) {
         );
         exit(EXIT_FAILURE);
     }
-    SHIFT_ARGS();
+    argc--;
+    argv++;
 
     while (time) {
         /* Clear stdout, otherwise going from e.g. 10->9 leaves a trailing 0 */
