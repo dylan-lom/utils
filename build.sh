@@ -18,7 +18,7 @@ cbuild() {
     target="$1"
     targetdest="bin/$(prettyname "$target")"
     shift
-    (set -x; cc $CFLAGS -o "$targetdest" "$target" src/util.c "$@")
+    (set -x; cc $CFLAGS -o "$targetdest" "$target" "$@")
 }
 
 shbuild() {
