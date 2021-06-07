@@ -29,10 +29,11 @@ usage()
 }
 
 int
-getlineno(const char *s)
+strtoi_safe(const char *s)
 {
     int ln;
     char *p;
+    // TODO: We should probably check for int overflows...
     ln = (int)strtol(s, &p, 10);
     if (errno != 0 || *p != '\0' || ln <= 0) {
         perror(errno ? NULL : "unable to parse line");
@@ -41,43 +42,63 @@ getlineno(const char *s)
     return ln;
 }
 
-// TODO: Refactor insertln
-/* Insert ln into lns, assuming it is lns_size long and 0 initialised */
-int *
-insertln(int ln, int *lns, size_t lns_size)
+// Insert n into ordered set ns
+void
+insert(int n, int *ns, size_t ns_sz)
 {
-    int *ip = lns;
-    int j;
-
-    while (lns_size && *ip && *ip < ln) {
-        ip++;
-        lns_size--;
+    size_t i;
+    for (i = 0; i < ns_sz; i++) {
+        if (ns[i] == n) return; // Don't insert duplicates
+        if (ns[i] == 0 || ns[i] > n) break; // Found insertion point
     }
 
-    while (lns_size) {
-        j = *ip;
-        *ip = ln;
-        ln = j;
-        ip++;
-        lns_size--;
+    int next;
+    for (; i < ns_sz; i++) {
+        next = ns[i];
+        ns[i] = n;
+        n = next;
     }
-
-    return lns;
 }
 
 void
-printlines(FILE *fp, int *lns, size_t lns_size)
+printlines(FILE *fp, int *lines, size_t lines_sz)
 {
-    char c;
-    int cln = 1;
-    while (lns_size && (c = fgetc(fp)) != '\0') {
-        if (cln > *lns) { lns++; lns_size--; }
-        if (cln == *lns) putc(c, stdout);
-        if (c == '\n') cln++;
+    char *s = NULL;
+    size_t n = 0;
+
+    for (int line = 1; getline(&s, &n, fp) != -1; line++) {
+        if (!lines_sz) break;
+        if (line == *lines) {
+            printf(s);
+            lines++;
+            lines_sz--;
+        }
     }
+
+    free(s);
 }
 
-/* Print specified lines from stdin */
+/* Print lines listed in argv from fp */
+void
+lines(int argc, char *argv[], FILE *fp)
+{
+    size_t lines_sz = argc; // how many lines were given as arguments
+    int *lines = calloc(lines_sz, sizeof(*lines));
+    if (!lines) {
+        perror(NULL);
+        exit(1);
+    }
+
+    // Construct ordered list of lines to extract from input
+    while (argc) {
+        insert(strtoi_safe(argv[0]), lines, lines_sz);
+        argv++;
+        argc--;
+    }
+
+    printlines(fp, lines, lines_sz);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -85,23 +106,10 @@ main(int argc, char *argv[])
     argv++;
     argc--;
 
-    if (argc < 1) usage();
-    size_t lns_size = argc;
-    int *lns = calloc(lns_size, sizeof(*lns));
-    if (!lns) {
-        fprintf(stderr, "unable to allocate memory\n");
-        exit(1);
-    }
+    if (argc < 1) usage(); // At least one line required
 
-    while (argc) {
-        lns = insertln(getlineno(argv[0]), lns, lns_size);
-        argv++;
-        argc--;
-    }
-
-    FILE *fp;
-    fp = fdopen(STDIN_FILENO, "r");
-    printlines(fp, lns, lns_size);
+    FILE *fp = fdopen(STDIN_FILENO, "r");
+    lines(argc, argv, fp);
     return 0;
 }
 
