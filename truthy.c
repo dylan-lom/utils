@@ -19,8 +19,6 @@
 #include <stdbool.h>
 #include <strings.h>
 
-#include "util.h"
-
 const char *argv0;
 
 /* Check if s is a valid decimal number */
@@ -58,7 +56,9 @@ truthy(const char *s)
 int
 main(int argc, char *argv[])
 {
-    SET_ARGV0();
+    argv0 = argv[0];
+    argv++;
+    argc--;
 
     if (argc < 1 || !truthy(argv[0]))
         return EXIT_FAILURE;

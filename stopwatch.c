@@ -19,8 +19,6 @@
 #include <stdlib.h>
 #include <termios.h>
 
-#include "util.h"
-
 const char* argv0;
 
 void usage() {
@@ -34,7 +32,10 @@ void printtime(int t) {
 }
 
 int main(int argc, char* argv[]) {
-    SET_ARGV0();
+    argv0 = argv[0];
+    argv++;
+    argc--;
+    
     if (argc > 0) usage();
 
     time_t t = 0;

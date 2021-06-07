@@ -13,16 +13,23 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <strings.h>
 
-#include "util.h"
-
 const char *argv0;
 
+char *
+str_toupper(char *str, size_t size) {
+    for (size_t i = 0; i < size; i++)
+        str[i] = toupper(str[i]);
+    return str;
+}
+
+// TODO: Refactor this function
 /*
  * Display msg, and prompt user for choice from opts.
  * Returns index of chosen opt.
@@ -35,7 +42,7 @@ confirm(const char *msg, const char **opts, int opts_count)
 {
     if (opts_count < 2) return 0;
 
-    char *opt0 = str_dupe(opts[0], sizeof(opts[0]));
+    char *opt0 = strndup(opts[0], sizeof(opts[0]));
     printf("%s [%s", msg, str_toupper(opt0, strlen(opt0)));
     free(opt0);
     for (int i = 1; i < opts_count; i++) {
@@ -46,7 +53,8 @@ confirm(const char *msg, const char **opts, int opts_count)
     char *resp = NULL;
     size_t n = 0;
     getline(&resp, &n, stdin);
-    str_trimr(resp, '\n', 1);
+    size_t resp_len = strlen(resp);
+    if (resp[resp_len-1] == '\n') resp[resp_len-1] = '\0';
 
     for (int i = 0; i < opts_count; i++) {
         if (strncasecmp(opts[i], resp, n) == 0) return i;
@@ -66,13 +74,14 @@ confirm(const char *msg, const char **opts, int opts_count)
 int
 main(int argc, const char *argv[])
 {
-    SET_ARGV0();
+    argv0 = argv[0];
+    (void) (argv++ && argc--);
 
     // Options provided as args
     if (argc > 1) return confirm(argv[0], argv+1, argc-1);
 
     // Options not provided -- use defaults
-    const char **opts = STR_EALLOC(2);
+    const char **opts = calloc(2, sizeof(*opts));
     opts[0] = "y";
     opts[1] = "n";
     return confirm(argc == 1 ? argv[0] : "Are you sure?", opts, 2);

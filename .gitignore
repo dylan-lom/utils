@@ -4,6 +4,7 @@ dist
 *.swp
 *.tgz
 djl-utils
+tags
 
 bin
 dist
