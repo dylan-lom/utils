@@ -4,14 +4,11 @@
 
 ## Goals
 
-* A collection of simple, well-documented CLI tools that follow *nix conventions
-* Minimal external dependencies, statically compilable
+* A collection of simple, well-documented CLI tools that follow *nix
+  conventions.
+* Statically compilable
 * Standalone applications -- if only one tool is required the source code for
   that tool alone need be distributed.
-
-**NOTICE** (2021-04-24): The project is still at a very early stage and these
-goals have not yet been achieved, as they were not the *original* goals of the
-project (eg. compilation/build process currently produces a .deb file)
 
 ## Tools
 
