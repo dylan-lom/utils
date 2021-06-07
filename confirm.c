@@ -18,24 +18,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <strings.h>
 
 const char *argv0;
-
-char *
-str_toupper(char *str, size_t size) {
-    for (size_t i = 0; i < size; i++)
-        str[i] = toupper(str[i]);
-    return str;
-}
 
 void
 prompt(const char *msg, const char **opts, int opts_count)
 {
     printf("%s", msg);
-    char *opt0 = strndup(opts[0], strlen(opts[0]));
-    printf(" [%s", str_toupper(opt0, strlen(opt0)));
-    free(opt0);
+    // Capitalise first character of first opt
+    printf(" [%c%s", toupper(opts[0][0]), opts[0]+1);
     for (int i = 1; i < opts_count; i++)
         printf("/%s", opts[i]);
     printf("]: ");
