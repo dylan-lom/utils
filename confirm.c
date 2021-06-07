@@ -29,27 +29,21 @@ str_toupper(char *str, size_t size) {
     return str;
 }
 
-// TODO: Refactor this function
-/*
- * Display msg, and prompt user for choice from opts.
- * Returns index of chosen opt.
- *
- * First option (opts[0]) is default if nothing else matches
- * Comparison is case insensitive
- */
-int
-confirm(const char *msg, const char **opts, int opts_count)
+void
+prompt(const char *msg, const char **opts, int opts_count)
 {
-    if (opts_count < 2) return 0;
-
-    char *opt0 = strndup(opts[0], sizeof(opts[0]));
-    printf("%s [%s", msg, str_toupper(opt0, strlen(opt0)));
+    printf("%s", msg);
+    char *opt0 = strndup(opts[0], strlen(opts[0]));
+    printf(" [%s", str_toupper(opt0, strlen(opt0)));
     free(opt0);
-    for (int i = 1; i < opts_count; i++) {
+    for (int i = 1; i < opts_count; i++)
         printf("/%s", opts[i]);
-    }
     printf("]: ");
+}
 
+int
+answer(const char **opts, int opts_count)
+{
     char *resp = NULL;
     size_t n = 0;
     getline(&resp, &n, stdin);
@@ -61,6 +55,20 @@ confirm(const char *msg, const char **opts, int opts_count)
     }
 
     return 0;
+}
+
+/*
+ * Display msg, and prompt user for choice from opts.
+ * Returns index of chosen opt.
+ *
+ * First option (opts[0]) is default if nothing else matches
+ * Comparison is case insensitive
+ */
+int
+confirm(const char *msg, const char **opts, int opts_count)
+{
+    prompt(msg, opts, opts_count);
+    return answer(opts, opts_count);
 }
 
 /*
