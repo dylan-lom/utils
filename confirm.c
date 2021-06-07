@@ -32,28 +32,40 @@ prompt(const char *msg, const char **opts, int opts_count)
     printf("]: ");
 }
 
+bool
+strisspace(const char *s)
+{
+    while (*s) {
+        if (!isspace(*s)) return false;
+        s++;
+    }
+    return true;
+}
 int
 answer(const char **opts, int opts_count)
 {
     char *resp = NULL;
     size_t n = 0;
     getline(&resp, &n, stdin);
+    if (strisspace(resp)) return 0; // No response -- default
     size_t resp_len = strlen(resp);
-    if (resp[resp_len-1] == '\n') resp[resp_len-1] = '\0';
+    resp[resp_len-1] = '\0';
 
     for (int i = 0; i < opts_count; i++) {
         if (strncasecmp(opts[i], resp, n) == 0) return i;
     }
 
-    return 0;
+    return -1; // Response wasn't in opts
 }
 
 /*
  * Display msg, and prompt user for choice from opts.
  * Returns index of chosen opt.
  *
- * First option (opts[0]) is default if nothing else matches
+ * First option (opts[0]) is default if response is only whitespace
  * Comparison is case insensitive
+ *
+ * If response is not an option, exit code is 255 (-1)
  */
 int
 confirm(const char *msg, const char **opts, int opts_count)
