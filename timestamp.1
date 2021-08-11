@@ -5,6 +5,7 @@ timestamp \- print the current datetime
 .B timestamp
 [\fB\-d\fR]
 [\fB\-r\fR]
+[\fB\-R\fR]
 [\fB\-v\fR]
 [\fB\-h\fR]
 .SH DESCRIPTION
@@ -13,14 +14,20 @@ prints the current datetime.
 .SH OPTIONS
 .TP
 .BR \-d
-Use %Y-%m-%d format.
+Print the date in year-month-day format (\fB%Y-%m-%d\fR)
 .TP
 .BR \-r
-Use the RFC3339 timestamp format.
+Print the date and time, similar to RFC3339 format with second precision;
+however there is no \fB:\fR seperator between the hours and minutes in the
+timezone offset (\fB%Y-%m-%dT%T%z\fR)
+.TP
+.BR \-R
+Print the date and time, conforming to the RFC3339 format with second precision
+(\fB%Y-%m-%dT%T%:z\fR).
 .TP
 .BR \-v
-Use %Y-%m-%d %T %Z format.
-This is the default format if none are given.
+Print the date and time in year-month-day hour:minute:second timezone format
+(\fB%Y-%m-%d %T %Z\fR). This is the default format if none are given.
 .TP
 .BR \-h
 Display help
@@ -29,6 +36,6 @@ To get the current datetime in RFC3339 format
 .PP
 .nf
 .RS
-timestamp -r
+timestamp -R
 .RE
 .fi

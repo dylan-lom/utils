@@ -15,9 +15,11 @@
 
 #include <time.h>
 #include <stdio.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
 
+#define STR_SZ 100
 const char *argv0;
 
 void
@@ -33,12 +35,19 @@ main(int argc, char *argv[])
 {
     argv0 = argv[0];
     const char *fmt = "%Y-%m-%d %H:%M";
+
+    tzset();
+    int rfctz = 0;
+
     char opt;
     while ((opt = getopt(argc, argv, "drRv")) != -1) {
         switch (opt) {
         case 'd': fmt = "%Y-%m-%d"; break;
         case 'r': fmt = "%Y-%m-%dT%T%z"; break;
-        case 'R': fmt = "%Y-%m-%dT%T%:z"; break;
+        case 'R': {
+            fmt = "%Y-%m-%dT%T";
+            rfctz = 1;
+        } break;
         case 'v': fmt = "%Y-%m-%d %H:%M %Z"; break;
         default: usage();
         }
@@ -47,14 +56,22 @@ main(int argc, char *argv[])
     if (!fmt) usage();
 
     time_t now = time(0);
-    struct tm *now_tm = localtime(&now);
+    struct tm *tm = localtime(&now);
 
-    char *s = calloc(100, sizeof(*s));
+    char *s = calloc(STR_SZ, sizeof(*s));
     if (!s) {
-        fprintf(stderr, "ERROR: unable to allocate memory\n");
+        perror("calloc");
         exit(1);
     }
-    strftime(s, 100, fmt, now_tm);
+
+    size_t l = strftime(s, STR_SZ, fmt, tm);
+
+    if (rfctz) {
+        assert(STR_SZ - l > 5);
+        long hr = timezone / 60 / 60 * -1, // timezone is west of utc
+             min = timezone / 60 % 60;
+        snprintf(s+l, STR_SZ - l, "%+03ld:%02ld", hr, labs(min));
+    }
 
     printf("%s\n", s);
 
