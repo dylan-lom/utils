@@ -3,11 +3,7 @@
 timestamp \- print the current datetime
 .SH SYNOPSIS
 .B timestamp
-[\fB\-d\fR]
-[\fB\-r\fR]
-[\fB\-R\fR]
-[\fB\-v\fR]
-[\fB\-h\fR]
+[\fB\-d\fR|\fB\-r\fR|\fB\-R\fR|\fB\-v\fR|\fB\-Y\fR|\fB\-h\fR]
 .SH DESCRIPTION
 .B timestamp
 prints the current datetime.
@@ -28,6 +24,9 @@ Print the date and time, conforming to the RFC3339 format with second precision
 .BR \-v
 Print the date and time in year-month-day hour:minute:second timezone format
 (\fB%Y-%m-%d %T %Z\fR). This is the default format if none are given.
+.TP
+.BR \-Y
+Print the day of the year.
 .TP
 .BR \-h
 Display help

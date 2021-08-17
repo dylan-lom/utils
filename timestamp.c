@@ -25,7 +25,7 @@ const char *argv0;
 void
 usage()
 {
-    fprintf(stderr, "usage: %s [-d|-r|-R|-v]", argv0);
+    fprintf(stderr, "usage: %s [-d|-r|-R|-v|-Y]\n", argv0);
     exit(1);
 }
 
@@ -39,8 +39,11 @@ main(int argc, char *argv[])
     tzset();
     int rfctz = 0;
 
+    time_t now = time(0);
+    struct tm *tm = localtime(&now);
+
     char opt;
-    while ((opt = getopt(argc, argv, "drRv")) != -1) {
+    while ((opt = getopt(argc, argv, "drRvY")) != -1) {
         switch (opt) {
         case 'd': fmt = "%Y-%m-%d"; break;
         case 'r': fmt = "%Y-%m-%dT%T%z"; break;
@@ -49,14 +52,15 @@ main(int argc, char *argv[])
             rfctz = 1;
         } break;
         case 'v': fmt = "%Y-%m-%d %H:%M %Z"; break;
+        case 'Y': {
+            printf("%d\n", tm->tm_yday);
+            return 0;
+        }
         default: usage();
         }
     }
 
     if (!fmt) usage();
-
-    time_t now = time(0);
-    struct tm *tm = localtime(&now);
 
     char *s = calloc(STR_SZ, sizeof(*s));
     if (!s) {
