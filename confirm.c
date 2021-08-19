@@ -20,6 +20,7 @@
 #include <stdbool.h>
 
 const char *argv0;
+bool word_mode = false;
 
 void
 prompt(const char *msg, const char **opts, int opts_count)
@@ -41,9 +42,12 @@ strisspace(const char *s)
     }
     return true;
 }
+
 int
-answer(const char **opts, int opts_count)
+confirm(const char *msg, const char **opts, int opts_count)
 {
+    prompt(msg, opts, opts_count);
+
     char *resp = NULL;
     size_t n = 0;
     getline(&resp, &n, stdin);
@@ -52,26 +56,11 @@ answer(const char **opts, int opts_count)
     resp[resp_len-1] = '\0';
 
     for (int i = 0; i < opts_count; i++) {
-        if (strncasecmp(opts[i], resp, n) == 0) return i;
+        if (!word_mode && toupper(resp[0]) == toupper(opts[i][0])) return i;
+        if (word_mode && strncasecmp(opts[i], resp, n) == 0) return i;
     }
 
     return -1; // Response wasn't in opts
-}
-
-/*
- * Display msg, and prompt user for choice from opts.
- * Returns index of chosen opt.
- *
- * First option (opts[0]) is default if response is only whitespace
- * Comparison is case insensitive
- *
- * If response is not an option, exit code is 255 (-1)
- */
-int
-confirm(const char *msg, const char **opts, int opts_count)
-{
-    prompt(msg, opts, opts_count);
-    return answer(opts, opts_count);
 }
 
 /*
@@ -81,6 +70,7 @@ confirm(const char *msg, const char **opts, int opts_count)
  *   $ confirm "Exit?"
  *   $ confirm "Download file?" n y
  *   $ confirm "What color?" red yellow blue
+ *   $ confirm -w "What color?" red yellow blue # check whole word
  */
 int
 main(int argc, const char *argv[])
@@ -88,12 +78,18 @@ main(int argc, const char *argv[])
     argv0 = argv[0];
     (void) (argv++ && argc--);
 
+    if (argc > 1 && strncmp(argv[0], "-w", 3) == 0) {
+        word_mode = true;
+        (void) (argv++ && argc--);
+    }
+
     // Options provided as args
     if (argc > 1) return confirm(argv[0], argv+1, argc-1);
 
     // Options not provided -- use defaults
-    const char **opts = calloc(2, sizeof(*opts));
+    const char *opts[2] = { "y", "n" };
     opts[0] = "y";
     opts[1] = "n";
     return confirm(argc == 1 ? argv[0] : "Are you sure?", opts, 2);
 }
+
