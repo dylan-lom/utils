@@ -1,4 +1,4 @@
-/* confirm.c v0.1.0
+/* confirm.c v0.1.1
  * Copyright (c) 2021 Dylan Lom <djl@dylanlom.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
@@ -13,6 +13,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +28,7 @@ prompt(const char *msg, const char **opts, int opts_count)
 {
     printf("%s", msg);
     // Capitalise first character of first opt
+    assert(opts[0][0] != '\0');
     printf(" [%c%s", toupper(opts[0][0]), opts[0]+1);
     for (int i = 1; i < opts_count; i++)
         printf("/%s", opts[i]);
@@ -81,6 +83,15 @@ main(int argc, const char *argv[])
     if (argc > 1 && strncmp(argv[0], "-w", 3) == 0) {
         word_mode = true;
         (void) (argv++ && argc--);
+    }
+
+    for (int i = 1; i < argc; i++) {
+        if (strisspace(argv[i])) {
+            fprintf(stderr,
+                    "confirm: ERROR: Options must be at least one non-whitespace character long, but option #%d was not. The default option will be chosen as supplied options are invalid.\n",
+                    i);
+            return 0;
+        }
     }
 
     // Options provided as args
