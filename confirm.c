@@ -1,4 +1,4 @@
-/* confirm.c v0.1.1
+/* confirm.c v0.2.0
  * Copyright (c) 2021 Dylan Lom <djl@dylanlom.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
@@ -21,7 +21,12 @@
 #include <stdbool.h>
 
 const char *argv0;
+/* Check input for whole-word match with options, enabled with -w flag at
+ * runtime */
 bool word_mode = false;
+/* Exit code to when none of the available options were entered -- change this
+ * to something like -1/255 if you need to detect incorrect input */
+#define UNKNOWN_OPT_EXIT_CODE 0
 
 void
 prompt(const char *msg, const char **opts, int opts_count)
@@ -62,7 +67,8 @@ confirm(const char *msg, const char **opts, int opts_count)
         if (word_mode && strncasecmp(opts[i], resp, n) == 0) return i;
     }
 
-    return -1; // Response wasn't in opts
+    // Response wasn't in opts
+    return UNKNOWN_OPT_EXIT_CODE;
 }
 
 /*
