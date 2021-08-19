@@ -1,78 +1,91 @@
-/* suptime.c v0.1.0
- * Copyright (c) 1980, 1991, 1993, 1994
- *	The Regents of the University of California.  All rights reserved.
- * Copyright (c) 2020 Dylan Lom <djl@dylanlom.com>
+/* suptime.c v0.2.0
+ * The following implementation is written "from scratch", and replaces the
+ * original implementation (v0.1.x) which was derived from the OpenBSD w(1)
+ * tool.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
+ * Copyright (c) 2020, 2021 Dylan Lom <djl@dylanlom.com>
  *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+ * REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+ * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ * LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <time.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <time.h>
 
-#define SECSPERMIN (time_t)60
-#define SECSPERHOUR (time_t)3600
-#define SECSPERDAY (time_t)86400
+#define BUF_SIZE 1024
 
-int main(int argc, char *argv[]){
-	char mode;
-	int opt;
-	if (argc < 2){
-		mode='s';
-	} else {
-		while ((opt = getopt(argc, argv, "smHdh")) != -1) {
-			switch(opt){
-				case 's': mode='s'; break;
-				case 'm': mode='m'; break;
-				case 'H': mode='H'; break;
-				case 'd': mode='d'; break;
-				case 'h': printf("%s [-s|-m|-H|-d][-h]\n", argv[0]); exit(0); break;
-				default: fprintf(stderr, "%s [-s|-m|-H|-d][-h]\n", argv[0]); exit(1); break;
-			}
-		}
-	}
+typedef enum {
+    MODE_SECONDS,
+    MODE_MINUTES,
+    MODE_HOURS,
+    MODE_DAYS,
+    MODE_FMT,
+} Mode;
 
+const char *argv0;
 
-	struct timespec boottime;
-	time_t uptime;
-	int mins, hrs, days;
+void
+usage()
+{
+    fprintf(stderr, "usage: %s [-s|-m|-H|-d|-h]\n", argv0);
+    fprintf(stderr, "usage: %s -f FORMAT\n", argv0);
+    exit(1);
+}
 
-	if (clock_gettime(CLOCK_BOOTTIME, &boottime) != -1){
-		uptime = boottime.tv_sec;
-		if (uptime < 60)
-			uptime += 60;
-		mins = uptime / SECSPERMIN;
-		hrs = uptime / SECSPERHOUR;
-		days = uptime / SECSPERDAY;
+int
+main(int argc, char *argv[])
+{
+    argv0 = argv[0];
+    Mode mode = MODE_SECONDS;
 
-		switch(mode) {
-			case 's': printf("%d\n", (int)uptime); break;
-			case 'm': printf("%d\n", (int)mins); break;
-			case 'H': printf("%d\n", (int)hrs); break;
-			case 'd': printf("%d\n", (int)days); break;
-		}
-	}
+    if (argc > 1) {
+        if (argv[1][0] != '-') usage();
+
+        char opt = argv[1][1];
+        switch (opt) {
+        case 's': mode = MODE_SECONDS; break;
+        case 'm': mode = MODE_MINUTES; break;
+        case 'H': mode = MODE_HOURS; break;
+        case 'd': mode = MODE_DAYS; break;
+        case 'f': mode = MODE_FMT; break;
+        default: usage();
+        }
+
+        if (argv[1][2] != '\0') usage();
+        if (mode == MODE_FMT && argc < 3) usage();
+    }
+
+    struct timespec ts;
+    if (clock_gettime(CLOCK_BOOTTIME, &ts) == -1) {
+        perror("clock_gettime");
+        exit(1);
+    }
+    time_t uptime = ts.tv_sec;
+
+    switch (mode) {
+    case MODE_SECONDS: printf("%ld\n", uptime); break;
+    case MODE_MINUTES: printf("%ld\n", uptime / 60); break;
+    case MODE_HOURS: printf("%ld\n", uptime / 3600); break;
+    case MODE_DAYS: printf("%ld\n", uptime / 86400); break;
+    case MODE_FMT: {
+        // TODO: Implement custom format function
+        char buf[BUF_SIZE] = {0};
+        struct tm *tm = gmtime(&(uptime));
+        tm->tm_year = -1900; // Offset year by UTC epoch
+        tm->tm_mday -= 1; // Start month at 0 so that results look better...
+        if (strftime(buf, BUF_SIZE, argv[2], tm) == 0) exit(1);
+        puts(buf);
+    } break;
+    default: assert(0 && "suptime: UNREACHABLE");
+    }
 }

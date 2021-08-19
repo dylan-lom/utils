@@ -4,16 +4,11 @@
 suptime \- Tell how long the system has been running.
 .SH SYNOPSIS
 .B suptime
-[\fB\-s\fR]
-[\fB\-m\fR]
-[\fB\-H\fR]
-[\fB\-d\fR]
-[\fB\-h\fR]
+[\fB\-s\fR|\fB\-m\fR|\fB\-H\fR|\fB\-d\fR|\fB\-f\fR FORMAT|\fB\-h\fR]
 .SH DESCRIPTION
 .B suptime
 outputs a single unit representation of system uptime.
 By default outputs in seconds.
-If multiple arguments are given, the last unit will be used.
 .SH OPTIONS
 .TP
 .BR \-s
@@ -27,6 +22,9 @@ Output in hours.
 .TP
 .BR \-d
 Output in days.
+.TP
+.BR \-f FORMAT
+Output in strftime(3) format, as specified in FORMAT
 .TP
 .BR \-h
 Display help.
@@ -47,5 +45,21 @@ To output system uptime in days
 .nf
 .RS
 suptime -d
+.RE
+.fi
+.PP
+To output system uptime in hour:minute:second format
+.PP
+.nf
+.RS
+suptime -f %T
+.RE
+.fi
+.PP
+Naively emulate GNU uptime(1) -p/--pretty output
+.PP
+.nf
+.RS
+suptime -f "up %d days, %H hours, %M minutes"
 .RE
 .fi
