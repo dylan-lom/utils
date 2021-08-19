@@ -1,4 +1,4 @@
-/*
+/* suptime.c v0.1.0
  * Copyright (c) 1980, 1991, 1993, 1994
  *	The Regents of the University of California.  All rights reserved.
  * Copyright (c) 2020 Dylan Lom <djl@dylanlom.com>

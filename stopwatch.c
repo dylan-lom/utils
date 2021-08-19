@@ -1,4 +1,4 @@
-/*
+/* stopwatch.c v0.1.0
  * Copyright (c) 2020 Dylan Lom <djl@dylanlom.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
