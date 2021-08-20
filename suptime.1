@@ -23,11 +23,46 @@ Output in hours.
 .BR \-d
 Output in days.
 .TP
-.BR \-f FORMAT
-Output in strftime(3) format, as specified in FORMAT
-.TP
 .BR \-h
 Display help.
+.TP
+.BR \-f\ FORMAT
+Output in custom format
+.PP
+Interpreted sequences for FORMAT are:
+.TP
+%Y
+years since boot
+.TP
+%d
+days since boot (by itself equivalent to -d)
+.TP
+%H
+hours since boot (by itself equivalent to -H)
+.TP
+%m
+minutes since boot (by itself equivalent to -m)
+.TP
+%s
+seconds since boot (by itself equivalent to -s)
+.TP
+%D
+day in current year since boot (if the system has been up for 1 year and 2 days, %D will become 2)
+.TP
+%h
+hour in current day since boot (if the system has been up for 1 day and 2 hours, %h will become 2)
+.TP
+%M
+minutes in current hour since boot (if the system has been up for 1 hour and 2 minutes, %M will become 2)
+.TP
+%S
+seconds in current minute since boot (if the system has been up for 1 minute and 2 seconds, %S will become 2)
+.TP
+%n
+a newline character
+.TP
+%t
+a tab character
 .SH EXAMPLES
 To output system uptime in seconds
 .PP

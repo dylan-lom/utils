@@ -1,4 +1,4 @@
-/* suptime.c v0.2.0
+/* suptime.c v0.2.1
  * The following implementation is written "from scratch", and replaces the
  * original implementation (v0.1.x) which was derived from the OpenBSD w(1)
  * tool.
@@ -22,7 +22,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define BUF_SIZE 1024
+#define SECSPERMIN 60
+#define SECSPERHOUR 3600
+#define SECSPERDAY 86400
+#define SECSPERYEAR 31557600
 
 typedef enum {
     MODE_SECONDS,
@@ -32,6 +35,7 @@ typedef enum {
     MODE_FMT,
 } Mode;
 
+#define BUF_SIZE 1024
 const char *argv0;
 
 void
@@ -40,6 +44,37 @@ usage()
     fprintf(stderr, "usage: %s [-s|-m|-H|-d|-h]\n", argv0);
     fprintf(stderr, "usage: %s -f FORMAT\n", argv0);
     exit(1);
+}
+
+void
+fmtprint(const char *fmt, time_t uptime)
+{
+    char c;
+    while ((c = *fmt++)) {
+        if (c == '%') {
+            c = *fmt++;
+            switch (c) {
+            case 'Y': printf("%ld", uptime / SECSPERYEAR); break;
+            case 'd': printf("%ld", uptime / SECSPERDAY); break;
+            case 'H': printf("%02ld", uptime / SECSPERHOUR); break;
+            case 'm': printf("%02ld", uptime / SECSPERMIN); break;
+            case 's': printf("%02ld", uptime); break;
+
+            case 'D': printf("%ld", uptime % SECSPERYEAR / SECSPERDAY); break;
+            case 'h': printf("%02ld", uptime % SECSPERDAY / SECSPERHOUR); break;
+            case 'M': printf("%02ld", uptime % SECSPERHOUR / SECSPERMIN); break;
+            case 'S': printf("%02ld", uptime % SECSPERMIN); break;
+
+            case 'n': putc('\n', stdout); break;
+            case 't': putc('\t', stdout); break;
+            default: printf("%%%c", c);
+            }
+        } else {
+            putc(c, stdout);
+        }
+    }
+
+    putc('\n', stdout);
 }
 
 int
@@ -74,18 +109,10 @@ main(int argc, char *argv[])
 
     switch (mode) {
     case MODE_SECONDS: printf("%ld\n", uptime); break;
-    case MODE_MINUTES: printf("%ld\n", uptime / 60); break;
-    case MODE_HOURS: printf("%ld\n", uptime / 3600); break;
-    case MODE_DAYS: printf("%ld\n", uptime / 86400); break;
-    case MODE_FMT: {
-        // TODO: Implement custom format function
-        char buf[BUF_SIZE] = {0};
-        struct tm *tm = gmtime(&(uptime));
-        tm->tm_year = -1900; // Offset year by UTC epoch
-        tm->tm_mday -= 1; // Start month at 0 so that results look better...
-        if (strftime(buf, BUF_SIZE, argv[2], tm) == 0) exit(1);
-        puts(buf);
-    } break;
+    case MODE_MINUTES: printf("%ld\n", uptime / SECSPERMIN); break;
+    case MODE_HOURS: printf("%ld\n", uptime / SECSPERHOUR); break;
+    case MODE_DAYS: printf("%ld\n", uptime / SECSPERDAY); break;
+    case MODE_FMT: fmtprint(argv[2], uptime); break;
     default: assert(0 && "suptime: UNREACHABLE");
     }
 }
