@@ -1,4 +1,4 @@
-/* line.c v0.1.0
+/* line.c v0.1.1
  * Copyright (c) 2020, 2021 Dylan Lom <djl@dylanlom.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
@@ -24,7 +24,7 @@ const char *argv0;
 void
 usage()
 {
-    fprintf(stderr, "usage: %s [LINE...]", argv0);
+    fprintf(stderr, "usage: %s [LINE...]\n", argv0);
     exit(1);
 }
 
@@ -36,7 +36,7 @@ strtoi_safe(const char *s)
     // TODO: We should probably check for int overflows...
     ln = (int)strtol(s, &p, 10);
     if (errno != 0 || *p != '\0' || ln <= 0) {
-        perror(errno ? NULL : "unable to parse line");
+        errno ? perror("strtol") : (void)fprintf(stderr, "line: Unable to parse line\n");
         exit(1);
     }
     return ln;
@@ -85,7 +85,7 @@ lines(int argc, char *argv[], FILE *fp)
     size_t lines_sz = argc; // how many lines were given as arguments
     int *lines = calloc(lines_sz, sizeof(*lines));
     if (!lines) {
-        perror(NULL);
+        perror("calloc");
         exit(1);
     }
 
