@@ -1,0 +1,12 @@
+diff --git a/confirm.c b/confirm.c
+index ab344d5..be33048 100644
+--- a/confirm.c
++++ b/confirm.c
+@@ -38,6 +38,7 @@ prompt(const char *msg, const char **opts, int opts_count)
+     for (int i = 1; i < opts_count; i++)
+         printf("/%s", opts[i]);
+     printf("]: ");
++    fflush(stdout);
+ }
+ 
+ bool

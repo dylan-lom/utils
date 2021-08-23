@@ -16,3 +16,7 @@ stopwatch
 suptime
 timestamp
 truthy
+*.exe
+
+*.orig.*
+*.reg.*
