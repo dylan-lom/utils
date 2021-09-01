@@ -4,7 +4,7 @@
 
 ## Goals
 
-* A collection of simple, well-documented CLI tools that follow *nix
+* A collection of simple, self-explanitory CLI tools that follow *nix
   conventions.
 * Statically compilable
 * Standalone applications -- if only one tool is required the source code for
