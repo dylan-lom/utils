@@ -1,4 +1,5 @@
-/* confirm.c v0.2.0
+/* confirm.c v0.2.1
+ * ============================================================================
  * Copyright (c) 2021 Dylan Lom <djl@dylanlom.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
@@ -11,6 +12,11 @@
  * LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
  * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
+ * ============================================================================
+ * CHANGELOG:
+ *  v0.2.1: Use 255 as the default UNKNOWN_OPT_EXIT CODE (instead of 0).
+ *    Stop -w flag being treated as message when no extra arguments given.
+ *    Statically allocate default options, remove "prompt" function.
  */
 
 #include <assert.h>
@@ -24,21 +30,12 @@ const char *argv0;
 /* Check input for whole-word match with options, enabled with -w flag at
  * runtime */
 bool word_mode = false;
-/* Exit code to when none of the available options were entered -- change this
- * to something like -1/255 if you need to detect incorrect input */
-#define UNKNOWN_OPT_EXIT_CODE 0
+/* Exit code to when none of the available options were entered -- you can
+ * change this to 0 if you just want to use the default option on unknown
+ * input */
+#define UNKNOWN_OPT_EXIT_CODE 255
 
-void
-prompt(const char *msg, const char **opts, int opts_count)
-{
-    printf("%s", msg);
-    // Capitalise first character of first opt
-    assert(opts[0][0] != '\0');
-    printf(" [%c%s", toupper(opts[0][0]), opts[0]+1);
-    for (int i = 1; i < opts_count; i++)
-        printf("/%s", opts[i]);
-    printf("]: ");
-}
+static const char* default_opts[] = { "yes", "no" };
 
 bool
 strisspace(const char *s)
@@ -53,8 +50,15 @@ strisspace(const char *s)
 int
 confirm(const char *msg, const char **opts, int opts_count)
 {
-    prompt(msg, opts, opts_count);
+    // Display prompt
+    printf("%s", msg);
+    printf(" [%c%s", toupper(**opts), *opts+1);
+    for (int i = 1; i < opts_count; i++) {
+        printf("/%s", opts[i]);
+    }
+    printf("]: ");
 
+    // Get response
     char *resp = NULL;
     size_t n = 0;
     getline(&resp, &n, stdin);
@@ -62,6 +66,7 @@ confirm(const char *msg, const char **opts, int opts_count)
     size_t resp_len = strlen(resp);
     resp[resp_len-1] = '\0';
 
+    // Match response to option
     for (int i = 0; i < opts_count; i++) {
         if (!word_mode && toupper(resp[0]) == toupper(opts[i][0])) return i;
         if (word_mode && strncasecmp(opts[i], resp, n) == 0) return i;
@@ -83,12 +88,13 @@ confirm(const char *msg, const char **opts, int opts_count)
 int
 main(int argc, const char *argv[])
 {
-    argv0 = argv[0];
-    (void) (argv++ && argc--);
+    argv0 = *(argv++);
+    argc--;
 
-    if (argc > 1 && strncmp(argv[0], "-w", 3) == 0) {
+    if (argc && strncmp(argv[0], "-w", 3) == 0) {
         word_mode = true;
-        (void) (argv++ && argc--);
+        argv++;
+        argc--;
     }
 
     for (int i = 1; i < argc; i++) {
@@ -100,13 +106,11 @@ main(int argc, const char *argv[])
         }
     }
 
-    // Options provided as args
-    if (argc > 1) return confirm(argv[0], argv+1, argc-1);
-
-    // Options not provided -- use defaults
-    const char *opts[2] = { "y", "n" };
-    opts[0] = "y";
-    opts[1] = "n";
-    return confirm(argc == 1 ? argv[0] : "Are you sure?", opts, 2);
+    if (argc > 1) {
+        // Options provided as args
+        return confirm(argv[0], argv+1, --argc);
+    } else {
+        return confirm(argc ? argv[0] : "Are you sure?", default_opts, 2);
+    }
 }
 
