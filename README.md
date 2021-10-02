@@ -13,9 +13,7 @@
 ## Tools
 
 * **confirm**: Prompt user for confirmation and report response via exit code
-* **countdown**: Start a countdown timer
 * **line**: Extract line(s) from stdin
-* **stopwatch**: Start a stopwatch timer
 * **suptime**: System uptime in terms of seconds, minutes, hours or days
 * **timestamp**: Current date-timestamps in common formats
 * **truthy**: Test if input is true-adjacent
