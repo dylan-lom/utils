@@ -18,3 +18,8 @@
 * **timestamp**: Current date-timestamps in common formats
 * **truthy**: Test if input is true-adjacent
 
+## Notes
+
+I'm using this to self-teach the basics of C. The code is not "good" and
+likely has some bugs.
+
