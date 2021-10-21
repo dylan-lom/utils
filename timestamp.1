@@ -3,14 +3,20 @@
 timestamp \- print the current datetime
 .SH SYNOPSIS
 .B timestamp
-[\fB\-d\fR|\fB\-r\fR|\fB\-R\fR|\fB\-v\fR|\fB\-Y\fR|\fB\-h\fR]
+[\fB\-d\fR|\fB-D\fR\fB\-r\fR|\fB\-R\fR|\fB\-v\fR|\fB\-Y\fR|\fB\-h\fR]
 .SH DESCRIPTION
 .B timestamp
-prints the current datetime.
+prints the current datetime in a few common formats.
+The tool does not attempt to replicate or replace the date(1) utility's format
+functionality; instead it could be viewed as a shorthand for some common
+formats, which is handy for use in one-off shell substrings (for example).
 .SH OPTIONS
 .TP
 .BR \-d
 Print the date in year-month-day format (\fB%Y-%m-%d\fR)
+.TP
+.BR \-D
+Print the date in year-month-day format, without any dashes (\fB%Y%m%d\fR)
 .TP
 .BR \-r
 Print the date and time, similar to RFC3339 format with second precision;

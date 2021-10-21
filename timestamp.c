@@ -25,7 +25,7 @@ const char *argv0;
 void
 usage()
 {
-    fprintf(stderr, "usage: %s [-d|-r|-R|-v|-Y]\n", argv0);
+    fprintf(stderr, "usage: %s [-d|-D|-r|-R|-v|-Y]\n", argv0);
     exit(1);
 }
 
@@ -43,9 +43,10 @@ main(int argc, char *argv[])
     struct tm *tm = localtime(&now);
 
     char opt;
-    while ((opt = getopt(argc, argv, "drRvY")) != -1) {
+    while ((opt = getopt(argc, argv, "dDrRvY")) != -1) {
         switch (opt) {
         case 'd': fmt = "%Y-%m-%d"; break;
+        case 'D': fmt = "%Y%m%d"; break;
         case 'r': fmt = "%Y-%m-%dT%T%z"; break;
         case 'R': {
             fmt = "%Y-%m-%dT%T";
