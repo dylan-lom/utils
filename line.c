@@ -1,5 +1,5 @@
-/* line.c v0.1.1
- * Copyright (c) 2020, 2021 Dylan Lom <djl@dylanlom.com>
+/* line.c v0.1.2
+ * Copyright (c) 2022 Dylan Lom <djl@dylanlom.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted.
@@ -69,7 +69,7 @@ printlines(FILE *fp, int *lines, size_t lines_sz)
     for (int line = 1; getline(&s, &n, fp) != -1; line++) {
         if (!lines_sz) break;
         if (line == *lines) {
-            printf(s);
+            printf("%s", s);
             lines++;
             lines_sz--;
         }
