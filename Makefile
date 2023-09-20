@@ -2,15 +2,16 @@
 
 CC=gcc
 BINS=confirm line suptime timestamp truthy
-CFLAGS=-Wall -Wextra -pedantic
+CFLAGS=-Wall -Wextra -pedantic -ggdb -static
 
 all: $(BINS)
 
 clean:
 	rm -f $(BINS)
 
-confirm: confirm.c
-	$(CC) $(CFLAGS) -o confirm confirm.c
+confirm: confirm.sh
+	cp confirm.sh confirm
+	chmod +x confirm
 
 cuts: cuts.c
 	$(CC) $(CFLAGS) -o cuts cuts.c
