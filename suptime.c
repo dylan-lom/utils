@@ -54,20 +54,22 @@ fmtprint(const char *fmt, time_t uptime)
         if (c == '%') {
             c = *fmt++;
             switch (c) {
-            case 'Y': printf("%ld", uptime / SECSPERYEAR); break;
-            case 'd': printf("%ld", uptime / SECSPERDAY); break;
-            case 'H': printf("%02ld", uptime / SECSPERHOUR); break;
-            case 'm': printf("%02ld", uptime / SECSPERMIN); break;
-            case 's': printf("%02ld", uptime); break;
-
-            case 'D': printf("%ld", uptime % SECSPERYEAR / SECSPERDAY); break;
-            case 'h': printf("%02ld", uptime % SECSPERDAY / SECSPERHOUR); break;
-            case 'M': printf("%02ld", uptime % SECSPERHOUR / SECSPERMIN); break;
-            case 'S': printf("%02ld", uptime % SECSPERMIN); break;
-
-            case 'n': putc('\n', stdout); break;
-            case 't': putc('\t', stdout); break;
-            default: printf("%%%c", c);
+                break; case 'Y': printf("%ld", uptime / SECSPERYEAR);
+                break; case 'd': printf("%ld", uptime / SECSPERDAY);
+                break; case 'H': printf("%02ld", uptime / SECSPERHOUR);
+                break; case 'm': printf("%02ld", uptime / SECSPERMIN);
+                break; case 's': printf("%02ld", uptime);
+                break; case 'D': printf("%ld", uptime % SECSPERYEAR / SECSPERDAY);
+                break; case 'h': printf("%02ld", uptime % SECSPERDAY / SECSPERHOUR);
+                break; case 'M': printf("%02ld", uptime % SECSPERHOUR / SECSPERMIN);
+                break; case 'S': printf("%02ld", uptime % SECSPERMIN);
+                break; case 'n': putc('\n', stdout);
+                break; case 't': putc('\t', stdout);
+                break; case 'T': printf("%02ld:%02ld:%02ld",
+                        uptime / SECSPERHOUR,
+                        uptime % SECSPERHOUR / SECSPERMIN,
+                        uptime % SECSPERMIN);
+                break; default: printf("%%%c", c);
             }
         } else {
             putc(c, stdout);
