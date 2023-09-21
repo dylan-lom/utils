@@ -25,6 +25,7 @@ suptime: suptime.c
 timestamp: timestamp.c
 	$(CC) $(CFLAGS) -o timestamp timestamp.c
 
-truthy: truthy.c
-	$(CC) $(CFLAGS) -o truthy truthy.c
+truthy: truthy.sh
+	cp truthy.sh truthy
+	chmod +x truthy
 
